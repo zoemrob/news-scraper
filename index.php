@@ -29,9 +29,10 @@ switch ($requestUri) {
         require __DIR__ . '/views/home.php';
         break;
     case '/scrape':
-        foreach(APNewsScraper::ARTICLE_HEADERS as $headerSelector) {
-            APNewsScraper::findAndStoreElements($headerSelector, 'Article Headers');
-        }
+        APNewsScraper::saveArticleDataToCSV(
+            APNewsScraper::CSV_FILE_NAME,
+            APNewsScraper::scrapeArticleData(APNewsScraper::fetch())
+        );
 
         break;
     default:
