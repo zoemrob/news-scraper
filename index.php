@@ -1,6 +1,7 @@
 <?php
 // import files
 include_once 'lib/utils.php';
+include_once 'lib/apnews-scraper.php';
 
 // use files
 
@@ -27,11 +28,11 @@ switch ($requestUri) {
     case '/':
         require __DIR__ . '/views/home.php';
         break;
-    case '/hello':
-        echo 'Hello World!';
-        break;
     case '/scrape':
-        echo 'Scraping...';
+        foreach(APNewsScraper::ARTICLE_HEADERS as $headerSelector) {
+            APNewsScraper::findAndStoreElements($headerSelector, 'Article Headers');
+        }
+
         break;
     default:
         http_response_code(404);
