@@ -29,7 +29,7 @@ switch ($requestUri) {
     case '/scrape':
         APNewsScraper::saveArticleDataToCSV(
             APNewsScraper::CSV_FILE_NAME,
-            APNewsScraper::scrapeArticleData(APNewsScraper::fetch())
+            APNewsScraper::scrapeArticleData()
         );
 
         break;

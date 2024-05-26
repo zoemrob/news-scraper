@@ -44,8 +44,10 @@ class APNewsScraper
         return (new DOMXPath($dom))->query($query);
     }
 
-    static function scrapeArticleData(DOMDocument $dom): array
+    static function scrapeArticleData(): array
     {
+        $dom = self::fetch();
+
         $articleHeaderNodes = self::findElements($dom, self::ARTICLE_HEADERS_SELECTOR);
 
         return array_map(function ($element) {
