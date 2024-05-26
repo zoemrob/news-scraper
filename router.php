@@ -1,9 +1,7 @@
 <?php
 // import files
-include_once 'lib/utils.php';
-include_once 'lib/apnews-scraper.php';
-
-// use files
+include_once __DIR__ . '/lib/utils.php';
+include_once __DIR__ . '/lib/apnews-scraper.php';
 
 $requestUri = Utils::normalizePath($_SERVER['REQUEST_URI']);
 
