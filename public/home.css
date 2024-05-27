@@ -4,10 +4,14 @@
     font-family: Arial, sans-serif;
 }
 
-header h1 {
+header h1,
+header h2 {
     text-align: center;
     margin: 0;
     padding: 1.5rem;
+}
+
+header {
     border-bottom: solid 1px #ccc;
 }
 
@@ -36,12 +40,41 @@ header h1 {
     }
 
     .left {
-        max-width: 40%;
+        max-width: 60%;
     }
 
     .right {
-        max-width: 60%;
+        max-width: 40%;
     }
 }
 
-/** layout.php end */
+/** layout.php END */
+
+/** _articles_table.php START */
+table.articles {
+    display: block;
+    height: 600px;
+    width: 100%;
+    border-collapse: collapse;
+    overflow-y: scroll;
+    padding: 0;
+    margin: 0;
+
+    th {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+    }
+
+    tbody {
+        height: 500px;
+    }
+
+    th, td {
+        padding: .5rem;
+    }
+
+    table, th, td {
+        border: 1px solid;
+    }
+}

@@ -7,10 +7,17 @@ class APNewsScraper
 {
     const TOP_URL = 'https://www.apnews.com';
     const CSV_FILE_NAME = 'apnewsdata-articles.csv';
+
+    const ARTICLE_HEADER = 'Article Header';
+    const ARTICLE_URL = 'Article URL';
+    const ARTICLE_DESCRIPTION = 'Article Description';
+    const ARTICLE_REFERENCE_ID = 'Reference ID';
+
     const CSV_HEADERS = [
-        'Article Header',
-        'Article URL',
-        'Article Description'
+        self::ARTICLE_HEADER,
+        self::ARTICLE_URL,
+        self::ARTICLE_DESCRIPTION,
+        self::ARTICLE_REFERENCE_ID,
     ];
     
     // XPATH Selectors
@@ -65,15 +72,36 @@ class APNewsScraper
         fputcsv($file, self::CSV_HEADERS);
 
         // iterate through elements, storing data in CSV
-        foreach ($content as $c) {
+        foreach ($content as $i => $c) {
             fputcsv($file, [
                 $c['articleHeaderContent'] ?? '',
                 $c['articleUrl'] ?? '',
                 $c['articleDescription'] ?? '',
+                $i + 1, // referenceId
             ]);
         }
 
         return fclose($file);
+    }
+
+    static function hasData(): bool
+    {
+        return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::CSV_FILE_NAME);
+    }
+
+    static function articleData(): array
+    {
+        if (!self::hasData()) return [];
+
+        $csv = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . self::CSV_FILE_NAME, 'r');
+        $keys = fgetcsv($csv);
+        $data = [];
+
+        while (($row = fgetcsv($csv)) !== false) {
+            $data[] = array_combine($keys, $row);
+        }
+
+        return $data;
     }
 
     /**
@@ -194,7 +222,7 @@ class APNewsScraper
      *
      * @return DOMNode|null
      */
-    static function recursivelyFindFirstChildElement(DOMNode $node, string $element, string $className, int $i = 1): DOMNode|null
+    private static function recursivelyFindFirstChildElement(DOMNode $node, string $element, string $className, int $i = 1): DOMNode|null
     {
         $maxDepth = 3;
 
@@ -218,7 +246,7 @@ class APNewsScraper
      *
      * @return bool
      */
-    static function hasDeepChild(DOMNode $node, string $element, string $className): bool
+    private static function hasDeepChild(DOMNode $node, string $element, string $className): bool
     {
         return !is_null(self::recursivelyFindFirstChildElement($node, $element, $className));
     }
