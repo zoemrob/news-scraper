@@ -1,3 +1,13 @@
 <?php ob_start(); ?>
-    <p>Hello Home!</p>
-<?php $content = ob_get_clean(); ?>
+
+<?php $leftContent = ob_get_clean(); ?>
+
+<?php ob_start(); ?>
+
+    <?php if (APNewsScraper::hasData()): ?>
+
+    <?php else: ?>
+
+    <?php endif; ?>
+
+<?php $rightContent = ob_get_clean(); ?>

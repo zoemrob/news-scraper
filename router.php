@@ -22,21 +22,23 @@ if (preg_match('/\.(?:css|js)$/', $requestUri)) {
     }
 }
 
-// route PHP logic
+// route PHP logic, fragile for the sake of project, does not handle query params
 switch ($requestUri) {
     case '/':
+        
         require __DIR__ . '/views/home.php';
         break;
-    case '/scrape':
+    case '/insights':
         APNewsScraper::saveArticleDataToCSV(
             APNewsScraper::CSV_FILE_NAME,
             APNewsScraper::scrapeArticleData()
         );
 
-        break;
+        exit(200);
     default:
         http_response_code(404);
         require __DIR__ . '/404.php';
 }
 
+// Render each path view within layout file, supply $content var
 require __DIR__ . '/views/layout.php';
