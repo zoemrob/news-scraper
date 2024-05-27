@@ -17,7 +17,8 @@ if (preg_match('/\.(?:css|js)$/', $requestUri)) {
 
         exit(200);
     } else {
-        exit(404);
+        http_response_code(404);
+        require __DIR__ . '/404.php';
     }
 }
 
@@ -37,3 +38,5 @@ switch ($requestUri) {
         http_response_code(404);
         require __DIR__ . '/404.php';
 }
+
+require __DIR__ . '/views/layout.php';
