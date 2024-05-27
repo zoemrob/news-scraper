@@ -163,7 +163,7 @@ class APNewsScraper
     private static function recursivelyFindParentElement(DOMNode $node, string $element, string $className = ''): DOMNode
     {
         if ($node->parentElement->nodeName === $element) {
-            $found = empty($className) || self::hasClassName($node->parentElement, $className);
+            $found = ($className === '') || self::hasClassName($node->parentElement, $className);
 
             if ($found) return $node->parentElement;
         }
@@ -202,7 +202,7 @@ class APNewsScraper
 
         $filtered = array_values(array_filter($childNodes, function ($child) use ($element, $className) {
             if ($child->nodeName === $element) {
-                return empty($className) || self::hasClassName($child, $className);
+                return ($className === '') || self::hasClassName($child, $className);
             }
 
             return false;
@@ -227,7 +227,7 @@ class APNewsScraper
         $maxDepth = 3;
 
         if (!empty($node->firstElementChild) && $node->firstElementChild->tagName === $element) {
-            $found = empty($className) || self::hasClassName($node->firstElementChild, $className);
+            $found = ($className === '') || self::hasClassName($node->firstElementChild, $className);
 
             if ($found) return $node->firstElementChild;
         }
