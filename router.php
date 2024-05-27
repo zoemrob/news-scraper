@@ -25,7 +25,6 @@ if (preg_match('/\.(?:css|js)$/', $requestUri)) {
 // route PHP logic, fragile for the sake of project, does not handle query params
 switch ($requestUri) {
     case '/':
-        
         require __DIR__ . '/views/home.php';
         break;
     case '/insights':
@@ -33,7 +32,6 @@ switch ($requestUri) {
             APNewsScraper::CSV_FILE_NAME,
             APNewsScraper::scrapeArticleData()
         );
-
         exit(200);
     default:
         http_response_code(404);
