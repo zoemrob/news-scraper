@@ -4,7 +4,7 @@
             <th>Article Headline</th>
             <th>Canonical URL</th>
             <th>Description (if present)</th>
-            <th></th>
+            <th>Article Insights</th>
         </tr>
     </thead>
     <tbody>
@@ -13,7 +13,7 @@
                 <td><?= $articleDatum[APNewsScraper::ARTICLE_HEADER] ?></td>
                 <td><a href="<?= $articleDatum[APNewsScraper::ARTICLE_URL] ?>"><?= $articleDatum[APNewsScraper::ARTICLE_URL] ?></a></td>
                 <td><?= $articleDatum[APNewsScraper::ARTICLE_DESCRIPTION] ?></td>
-                <td><button class="articleButton">Article Insights</button></td>
+                <td><button class="articleButton">Show</button></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

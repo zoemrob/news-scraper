@@ -4,11 +4,12 @@
     const insightsPath = '/insights';
     const articlePath = '/insights/article';
 
-    document.addEventListener('DOMContentLoaded', addListeners);
+    document.addEventListener('DOMContentLoaded', setup());
 
-    function addListeners() {
+    function setup() {
         document.getElementById('updateInsights').addEventListener('click', updateInsights);
         mountTableListener();
+        setupBarCharts();
     }
 
     function updateInsights() {
@@ -37,9 +38,23 @@
 
         const tr = target.closest('tr');
         const referenceId = tr.dataset.referenceId;
-        console.log(`clicked tr ${referenceId}`);
         // need to modify the router to accept id, or use query param as workaround
-//        get(articlePath)
+        //        get(articlePath)
+    }
+
+    function setupBarCharts() {
+        document.querySelectorAll('.canvasWrapper').forEach(canvasWrapper => {
+            const canvas = canvasWrapper.querySelector('canvas');
+            if (canvas) {
+                console.log(canvas.dataset);
+                const chartData = JSON.parse(canvas.dataset.config);
+                buildBarChart(canvas, chartData);
+            }
+        });
+    }
+
+    function buildBarChart(mountElement, data) {
+        new Chart(mountElement, data)
     }
 
     async function get(path, params = {}) {

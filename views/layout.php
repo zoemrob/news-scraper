@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Associated Press News Insights</title>
         <link rel="stylesheet" href="/public/home.css">
-        <script src="/public/home.js"></script>
+        <script src="/public/home.js" type="module"></script>
+        <!-- chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     </head>
     <body>
         <div>
