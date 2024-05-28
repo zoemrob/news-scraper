@@ -8,16 +8,14 @@
         </p>
     <?php endif; ?>
 
-<?php $leftContent = ob_get_clean(); ?>
+<?php $bottomContent = ob_get_clean(); ?>
 
-<?php ob_start(); ?>
-
-    <?php if (APNewsScraper::hasData()): ?>
-        <?php require __DIR__ . '/_keyword_insights.php' ?>
-    <?php else: ?>
+<?php if (APNewsScraper::hasData()): ?>
+    <?php require __DIR__ . '/_keyword_insights.php' ?>
+<?php else: ?>
+    <?php ob_start(); ?>
         <p>
             No data found. Click "Update Insights" to view front page insights.
         </p>
-    <?php endif; ?>
-
-<?php $rightContent = ob_get_clean(); ?>
+    <?php $topRightContent = ob_get_clean(); ?>
+<?php endif; ?>

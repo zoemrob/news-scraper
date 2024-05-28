@@ -4,6 +4,7 @@ class Utils {
         '-',
         'at',
         's',
+        'as',
         'what',
         'are',
         'and',
@@ -14,13 +15,16 @@ class Utils {
         'this',
         'in',
         'it',
+        'its',
         'on',
         'or',
         'of',
         'to',
         'was',
         'with',
-        'for'
+        'for',
+        'that',
+        'some',
     ];
 
     static function normalizePath(string $path): string
@@ -93,14 +97,17 @@ class Utils {
         return array_filter($counts, fn($value) => $value > $count);
     }
 
-    static function keywordsToBarChartJson(array $keywords): string
+    static function keywordsToBarChartJson(array $keywords, string $label): string
     {
         return json_encode([
             'type' => 'bar',
             'data' => [
                 'labels' => array_keys($keywords),
                 'datasets' => [
-                    ['data' => array_values($keywords)],
+                    [
+                        'data' => array_values($keywords),
+                        'label' => $label,
+                    ],
                 ],
             ],
         ]);

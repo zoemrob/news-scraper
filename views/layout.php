@@ -21,8 +21,13 @@
                 <button id="updateInsights" type="button">Update Insights</button>
             </div>
             <div class="content">
-                <div class="left"><?= $leftContent ?? '' ?></div>
-                <div class="right"><?= $rightContent ?? '' ?></div>
+                <div class="top">
+                    <div class="left"><?= $topLeftContent ?? '' ?></div>
+                    <div class="right"><?= $topRightContent ?? '' ?></div>
+                </div>
+                <div class="bottom">
+                    <?= $bottomContent ?? '' ?>
+                </div>
             </div>
         </div>
     </body>
