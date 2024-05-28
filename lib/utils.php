@@ -27,6 +27,16 @@ class Utils {
         'some',
     ];
 
+    const OSINT_BLUE = 'blue';
+    const OSINT_BLUE_LIGHT = 'blue-light';
+    const OSTINT_ORANGE = 'orange';
+
+    const OSINT_BRAND_COLORS = [
+        self::OSTINT_ORANGE => 'rgb(242, 144, 65)',
+        self::OSINT_BLUE => 'rgba(40, 37, 96, 1)',
+        self::OSINT_BLUE_LIGHT => 'rgba(40, 37, 96, .1)',
+    ];
+
     static function normalizePath(string $path): string
     {
         $path = preg_replace('/[\\\\\/]+/', '/', $path);
@@ -97,9 +107,9 @@ class Utils {
         return array_filter($counts, fn($value) => $value > $count);
     }
 
-    static function keywordsToBarChartJson(array $keywords, string $label): string
+    static function keywordsToBarChartData(array $keywords, string $label): array
     {
-        return json_encode([
+        return [
             'type' => 'bar',
             'data' => [
                 'labels' => array_keys($keywords),
@@ -107,9 +117,27 @@ class Utils {
                     [
                         'data' => array_values($keywords),
                         'label' => $label,
+                        'backgroundColor' => self::OSINT_BRAND_COLORS[self::OSTINT_ORANGE],
+                        'hoverBackgroundColor' => self::OSINT_BRAND_COLORS[self::OSINT_BLUE],
                     ],
                 ],
             ],
-        ]);
+            'options' => [
+                'plugins' => [
+                    'legend' => [
+                        'labels' => [
+                            'font' => [
+                                'size' => 16
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    static function keywordsToBarChartJson(array $keywords, string $label): string
+    {
+        return json_encode(self::keywordsToBarChartData($keywords, $label));
     }
 }

@@ -1,12 +1,49 @@
 :root {
-    --max-width-val: 95%;
+    --osint-brand-orange: rgb(242, 144, 65);
+    --osint-brand-blue-light: rgba(40,37,96, .1);
+    --osint-brand-blue-dark: rgba(40, 37, 96, 1);
 }
 
-/** layout.php start */
+/** universal styles START */
 * {
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
+
+body {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover,
+a:active {
+    transition: color .2s ease-in;
+    color: var(--osint-brand-orange);
+}
+
+
+button {
+    border: 1px solid #fff;
+    border-radius: 16px;
+    padding: .5rem;
+    color: #fff;
+    background-color: var(--osint-brand-orange);
+    transform: scale(1);
+}
+
+button:hover {
+    background-color: var(--osint-brand-blue-dark);
+    transition: all .2s ease-in;
+    transform: scale(1.1);
+/*    transition: scale .5s ease-in;*/
+}
+/** universal styles END */
+
+/** layout.php start */
 
 header h1,
 header h2 {
@@ -17,6 +54,12 @@ header h2 {
 
 header {
     border-bottom: solid 1px #ccc;
+    background-color: var(--osint-brand-blue-dark);
+    color: #fff;
+
+    a {
+        color: #fff;
+    }
 }
 
 .layout {
@@ -43,7 +86,7 @@ header {
 
     .top {
         display: flex;
-        width: var(--max-width-val);
+        width: 90%;
         justify-content: space-evenly;
 
         .left,
@@ -58,17 +101,25 @@ header {
 
     .bottom {
         display: flex;
-        width: var(--max-width-val);
+        width: 80%;
         justify-content: center;
         margin-bottom: 2rem;
         border-bottom: 1px solid;
-        border-top: 1px solid;
+        flex-wrap: wrap;
     }
 }
 
 /** layout.php END */
 
 /** _articles_table.php START */
+.total-articles {
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    padding: 1rem;
+    font-weight: bold;
+}
+
 table.articles {
     display: block;
     height: 600px;
@@ -81,7 +132,11 @@ table.articles {
     th {
         position: sticky;
         top: 0;
-        background-color: #fff;
+        background-color: var(--osint-brand-blue-dark);
+        color: #fff;
+        z-index: 100;
+        font-size: 1.2rem;
+        border-color: #000;
     }
 
     tbody {
@@ -92,12 +147,20 @@ table.articles {
         padding: .5rem;
     }
 
+    th:not(th:last-child), td:not(td:last-child) {
+        width: 30%;
+    }
+
     table, th, td {
         border: 1px solid;
     }
 
     th {
         border-top: none;
+    }
+
+    td {
+        background-color: var(--osint-brand-blue-light);
     }
 
     td:last-child {

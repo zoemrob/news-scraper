@@ -1,3 +1,5 @@
+<?php $articles = APNewsScraper::articleData(); ?>
+<legend class="total-articles"><?= count($articles) ?> Front Page Articles</legend>
 <table class="articles">
     <thead>
         <tr>
@@ -8,7 +10,7 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach(APNewsScraper::articleData() as $articleDatum): ?>
+        <?php foreach($articles as $articleDatum): ?>
             <tr data-reference-id="<?= $articleDatum[APNewsScraper::ARTICLE_REFERENCE_ID] ?>">
                 <td><?= $articleDatum[APNewsScraper::ARTICLE_HEADER] ?></td>
                 <td><a href="<?= $articleDatum[APNewsScraper::ARTICLE_URL] ?>"><?= $articleDatum[APNewsScraper::ARTICLE_URL] ?></a></td>

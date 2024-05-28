@@ -2,6 +2,8 @@
 // import files
 include_once __DIR__ . '/lib/utils.php';
 include_once __DIR__ . '/lib/apnews-scraper.php';
+include_once __DIR__ . '/lib/data-processor.php';
+include_once __DIR__ . '/lib/responses.php';
 
 $requestUri = Utils::normalizePath($_SERVER['REQUEST_URI']);
 
@@ -32,6 +34,8 @@ switch ($requestUri) {
             APNewsScraper::CSV_FILE_NAME,
             APNewsScraper::scrapeArticleData()
         );
+
+        Responses::sendInsights();
         exit(200);
     default:
         http_response_code(404);
@@ -40,3 +44,4 @@ switch ($requestUri) {
 
 // Render each path view within layout file, supply $content var
 require __DIR__ . '/views/layout.php';
+exit(200);

@@ -4,6 +4,9 @@
     const insightsPath = '/insights';
     const articlePath = '/insights/article';
 
+    // global state for charts, simple application
+    let charts = [];
+
     document.addEventListener('DOMContentLoaded', setup());
 
     function setup() {
@@ -12,11 +15,13 @@
         setupBarCharts();
     }
 
-    function updateInsights() {
-        unmountTableListener();
-        const results = get(insightsPath);
-        // modify table
-        mountTableListener();
+    async function updateInsights() {
+        const results = await get(insightsPath);
+        const { chartLeft, chartRight, tableHtml } = await results.json();
+        console.log(chartLeft);
+        console.log(chartRight);
+        updateTableHtml(tableHtml);
+        updateBarCharts(chartLeft, chartRight);
     }
 
     function mountTableListener() {
@@ -42,11 +47,20 @@
         //        get(articlePath)
     }
 
+    function updateTableHtml(tableHtml) {
+        unmountTableListener();
+        document.querySelector('.bottom').innerHTML = tableHtml;
+        mountTableListener();
+    }
+
     function setupBarCharts() {
+        if (charts.length !== 0) {
+            charts.forEach(chart => chart.destroy());
+        }
+
         document.querySelectorAll('.canvasWrapper').forEach(canvasWrapper => {
             const canvas = canvasWrapper.querySelector('canvas');
             if (canvas) {
-                console.log(canvas.dataset);
                 const chartData = JSON.parse(canvas.dataset.config);
                 buildBarChart(canvas, chartData);
             }
@@ -54,7 +68,38 @@
     }
 
     function buildBarChart(mountElement, data) {
-        new Chart(mountElement, data)
+        charts.push(new Chart(mountElement, data));
+    }
+
+    function mountChartScaffold(toElement, chartData) {
+        const canvas = document.createElement('canvas');
+        const canvasWrapper = document.createElement('div');
+
+        canvasWrapper.classList.add('canvasWrapper');
+        canvasWrapper.appendChild(canvas);
+        toElement.appendChild(canvasWrapper);
+
+        return toElement.querySelector('canvas');
+    }
+
+    function updateBarCharts(chartLeftData, chartRightData) {
+        if (chartLeftData) {
+            let leftChart = document.querySelector('.left .canvasWrapper canvas');
+            if (!leftChart) {
+                leftChart = mountChartScaffold(document.querySelector('.left'), chartLeftData);
+            }
+            leftChart.dataset.config =JSON.stringify(chartLeftData);
+        }
+
+        if (chartRightData) {
+            let rightChart = document.querySelector('.right .canvasWrapper canvas');
+            if (!rightChart) {
+                rightChart = mountChartScaffold(document.querySelector('.right'), chartRightData);
+            }
+            rightChart.dataset.config = JSON.stringify(chartRightData);
+        }
+
+        setupBarCharts();
     }
 
     async function get(path, params = {}) {

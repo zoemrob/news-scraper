@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Associated Press News Insights</title>
+        <title>News Insights</title>
         <link rel="stylesheet" href="/public/home.css">
         <script src="/public/home.js" type="module"></script>
         <!-- chart.js -->
@@ -12,8 +12,8 @@
     <body>
         <div>
             <header>
-                <h1>Associated Press News Insights</h1>
-                <h2><a href="https://www.apnews.com">AP News</a></h2>
+                <h1>News Insights</h1>
+                <h2><a href="https://www.apnews.com">Associated Press News: www.apnews.com</a></h2>
             </header>
         </div>
         <div class="layout">
