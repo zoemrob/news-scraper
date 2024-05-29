@@ -29,7 +29,7 @@ class DataProcessor
      */
     static function headlineLengthsData(): array
     {
-        return Utils::headlineLengthsToPieChartData(self::headlineLengths(), "Article Headline Lengths");
+        return Utils::headlineLengthsToPieChartData(self::headlineLengths(),  "Article Headline Lengths");
     }
 
     /**
@@ -37,7 +37,7 @@ class DataProcessor
      */
     static function headlineLengthsJson(): string
     {
-        return Utils::headlineLengthsToPieChartJson(self::headlineLengths(), "Article Headline Lengths");
+        return Utils::headlineLengthsToPieChartJson(self::headlineLengths(),  "Article Headline Lengths");
     }
 
     /**
@@ -46,7 +46,7 @@ class DataProcessor
      */
     static function articlesByKeywordsData(): array
     {
-        return Utils::keywordsToBarChartData(self::articlesByKeywords(), "Article Headlines per Keyword\n(Filtered > 2 Occurrences)");
+        return Utils::keywordsToBarChartData(self::articlesByKeywords(), "Number of Articles with Keyword", "Keyword Prevalence in Headlines (Threshold: 3)");
     }
     
 /**
@@ -55,7 +55,7 @@ class DataProcessor
      */
     static function articlesByKeywordsDataJson(): string
     {
-        return Utils::keywordsToBarChartJson(self::articlesByKeywords(), "Article Headlines per Keyword\n(Filtered > 2 Occurrences)");
+        return Utils::keywordsToBarChartJson(self::articlesByKeywords(), "Number of Articles with Keyword", "Keyword Prevalence in Headlines (Threshold: 3)");
     }
 
     /**
@@ -81,7 +81,8 @@ class DataProcessor
 
         return Utils::keywordsToBarChartData(
             $filtered,
-            "Selected Article Keywords\n(Filtered > 5 Occurrences)"
+            "Keyword Frequency",
+            "Keyword Frequency Distribution within Article (Threshold: 6)"
         );
     }
 }

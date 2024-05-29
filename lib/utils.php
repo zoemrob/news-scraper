@@ -200,10 +200,11 @@ class Utils {
      * Converts an array of string => int into chart.js format
      * @param array $keywords string => int
      * @param string $label Label for chart legend
+     * @param string $title Title for chart
      *
      * @return array
      */
-    static function keywordsToBarChartData(array $keywords, string $label): array
+    static function keywordsToBarChartData(array $keywords, string $label, string $title): array
     {
         return [
             'type' => 'bar',
@@ -227,6 +228,13 @@ class Utils {
                             ],
                         ],
                     ],
+                   'title' => [
+                        'text' => $title,
+                        'display' => true,
+                        'font' => [
+                            'size' => 18,
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -248,7 +256,6 @@ class Utils {
                 'datasets' => [
                     [
                         'data' => array_values($lengths),
-                        'label' => $label,
                         'backgroundColor' => array_reverse(array_values(self::OSINT_BRAND_COLORS)),
                     ],
                 ],
@@ -262,6 +269,13 @@ class Utils {
                             ],
                         ],
                     ],
+                    'title' => [
+                        'text' => $label,
+                        'display' => true,
+                        'font' => [
+                            'size' => 18,
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -272,7 +286,7 @@ class Utils {
      * @param array $lengths string => int
      * @param string $label Label for chart legend
      *
-     * @return array
+     * @return string
      */
     static function headlineLengthsToPieChartJson(array $lengths, string $label): string
     {
@@ -283,11 +297,12 @@ class Utils {
      * Variant of keywordsToBarChart which returns as JSON
      * @param array $keywords string => int
      * @param string $label Label for chart legend
+     * @param string $title Title for Chart
      *
      * @return string
      */
-    static function keywordsToBarChartJson(array $keywords, string $label): string
+    static function keywordsToBarChartJson(array $keywords, string $label, string $title): string
     {
-        return json_encode(self::keywordsToBarChartData($keywords, $label));
+        return json_encode(self::keywordsToBarChartData($keywords, $label, $title));
     }
 }
