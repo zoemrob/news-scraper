@@ -9,7 +9,7 @@ Requirements: PHP 8.0+
 
 To run: `php -S 127.0.0.1:3000 router.php`
 
-Navigate to `localhost` in browser.
+Navigate to `http://localhost:3000` in browser.
 
 ---
 

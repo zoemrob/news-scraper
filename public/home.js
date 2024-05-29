@@ -1,6 +1,6 @@
 // IIFE to provide scoping for js
 (function() {
-    const baseUrl = 'http://localhost';
+    const baseUrl = 'http://localhost:3000';
     const insightsPath = '/insights';
     const articlePath = '/insights/article';
 
