@@ -7,7 +7,7 @@ class APNewsScraper
 {
     const TOP_URL = 'https://www.apnews.com';
     const HEADLINES_CSV_FILE_NAME = 'apnewsdata-article-headlines.csv';
-    const ARTICLE_INSIGHTS_CSV_FILE_NAME = 'apnewsdata-article-insights';
+    const ARTICLE_INSIGHTS_CSV_FILE_NAME = 'apnewsdata-article-insights.csv';
 
     /** HEADLINES FILE HEADERS */
     const ARTICLE_HEADER = 'Article Header';

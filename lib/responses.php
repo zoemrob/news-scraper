@@ -21,7 +21,7 @@ class Responses
         $tableHtml = ob_get_clean();
         
         self::jsonResponse([
-            'chartLeft' => DataProcessor::keywordData(),
+            'chartLeft' => DataProcessor::headlineLengthsData(),
             'chartRight' => DataProcessor::articlesByKeywordsData(),
             'tableHtml' => $tableHtml,
         ]);

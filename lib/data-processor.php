@@ -43,6 +43,33 @@ class DataProcessor
     }
     
     /**
+     * Finds all headlines and gathers sum of headline length
+     * @return array category => count
+     */
+    static function headlineLengths(): array
+    {
+        $headlines = array_column(APNewsScraper::articleHeadlinesData(), APNewsScraper::ARTICLE_HEADER);
+        return Utils::headlineLengthAnalysis($headlines);
+    }
+
+    /**
+     * Formats headlineLengths data into chart.js data structure
+     * @return array
+     */
+    static function headlineLengthsData(): array
+    {
+        return Utils::headlineLengthsToPieChartData(self::headlineLengths(), "Article Headline Lengths");
+    }
+
+    /**
+     * Formats headlineLengths data into chart.js data structure JSON
+     */
+    static function headlineLengthsJson(): string
+    {
+        return Utils::headlineLengthsToPieChartJson(self::headlineLengths(), "Article Headline Lengths");
+    }
+
+    /**
      * Formats articlesByKeywords data into chart.js data structure
      * @return array
      */

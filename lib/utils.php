@@ -28,6 +28,7 @@ class Utils {
         'for',
         'that',
         'some',
+        'from',
     ];
 
     // Thought I would be clever and steal some OSINT Combine brand colors
@@ -40,6 +41,10 @@ class Utils {
         self::OSINT_BLUE => 'rgba(40, 37, 96, 1)',
         self::OSINT_BLUE_LIGHT => 'rgba(40, 37, 96, .1)',
     ];
+
+    const SHORT_HEADLINE = 'Short (< 40 chars)';
+    const MED_HEADLINE = 'Medium (<= 80 chars)';
+    const LONG_HEADLINE = 'Long (80+ chars)';
 
     /**
      * Vastly simplifies/normalizes request URI
@@ -74,7 +79,7 @@ class Utils {
         $counts = [];
 
         foreach ($strings as $string) {
-            $normalized = strtolower($string);
+            $normalized = preg_replace('/\d\']/', '', strtolower($string));
             $words = explode(' ', $normalized);
 
             // Count the words
@@ -106,7 +111,7 @@ class Utils {
         $articlesByKeywords = [];
 
         foreach($headlines as $headline) {
-            $normalized = strtolower($headline);
+            $normalized = preg_replace('/\d\']/', '', strtolower($headline));
             $words = explode(' ', $normalized);
 
             foreach ($words as $word) {
@@ -124,6 +129,35 @@ class Utils {
 
         array_multisort($articlesByKeywords, $sortDirection);
         return $articlesByKeywords;
+    }
+
+    /**
+     * Performs analysis on headline length and categorizes as short, medium, or long
+     * @param array $headlines Article Headlines
+     *
+     * @return array category => count
+     */
+    static function headlineLengthAnalysis(array $headlines): array
+    {
+        $categories = [
+            self::SHORT_HEADLINE => 0,
+            self::MED_HEADLINE => 0,
+            self::LONG_HEADLINE => 0,
+        ];
+
+        foreach ($headlines as $headline) {
+            $length = strlen($headline);
+
+            if ($length < 40) {
+                $categories[self::SHORT_HEADLINE]++;
+            } elseif ($length <= 80) {
+                $categories[self::MED_HEADLINE]++;
+            } else {
+                $categories[self::LONG_HEADLINE]++;
+            }
+        }
+
+        return $categories;
     }
 
     /**
@@ -196,6 +230,53 @@ class Utils {
                 ],
             ],
         ];
+    }
+
+    /**
+     * Converts an array of string => int into chart.js pie format
+     * @param array $lengths string => int
+     * @param string $label Label for chart legend
+     *
+     * @return array
+     */
+    static function headlineLengthsToPieChartData(array $lengths, string $label): array
+    {
+        return [
+            'type' => 'pie',
+            'data' => [
+                'labels' => array_keys($lengths),
+                'datasets' => [
+                    [
+                        'data' => array_values($lengths),
+                        'label' => $label,
+                        'backgroundColor' => array_reverse(array_values(self::OSINT_BRAND_COLORS)),
+                    ],
+                ],
+            ],
+            'options' => [
+                'plugins' => [
+                    'legend' => [
+                        'labels' => [
+                            'font' => [
+                                'size' => 16
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Variant of headlineLengthsToPieChartData which returns chart.js data as JSON
+     * @param array $lengths string => int
+     * @param string $label Label for chart legend
+     *
+     * @return array
+     */
+    static function headlineLengthsToPieChartJson(array $lengths, string $label): string
+    {
+        return json_encode(self::headlineLengthsToPieChartData($lengths, $label));
     }
 
     /**
