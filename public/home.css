@@ -96,6 +96,10 @@ header {
             & > * {
                 width: 100%;
             }
+
+            &.empty {
+                display: none;
+            }
         }
     }
 

@@ -4,7 +4,7 @@ class DataProcessor
 {
     static function allKeywordsFiltered(): array
     {
-        $headlines = array_column(APNewsScraper::articleData(), APNewsScraper::ARTICLE_HEADER);
+        $headlines = array_column(APNewsScraper::articleHeadlinesData(), APNewsScraper::ARTICLE_HEADER);
         $keywords = Utils::countAllKeywords($headlines);
         return Utils::filterByCount($keywords);
     }
@@ -21,7 +21,7 @@ class DataProcessor
     
     static function articlesByKeywords(): array
     {
-        $headlines = array_column(APNewsScraper::articleData(), APNewsScraper::ARTICLE_HEADER);
+        $headlines = array_column(APNewsScraper::articleHeadlinesData(), APNewsScraper::ARTICLE_HEADER);
         $articlesByKeywords = Utils::articleSumByKeyword($headlines);
         return Utils::filterByCount($articlesByKeywords);
     }
@@ -34,5 +34,22 @@ class DataProcessor
     static function articlesByKeywordsDataJson(): string
     {
         return Utils::keywordsToBarChartJson(self::articlesByKeywords(), "Article Headlines per Keyword\n(Filtered > 2 Occurrences)");
+    }
+
+    static function articleInsightsKeywords(string $body): array
+    {
+        $keywordSums = Utils::articleInsightSumKeywords($body);
+        return Utils::filterByCount($keywordSums, 5);
+    }
+
+    static function articleInsightsKeywordsData(array $articleInsights): array
+    {
+        $filtered = self::articleInsightsKeywords($articleInsights[APNewsScraper::ARTICLE_BODY]);
+        if (empty($filtered)) return [];
+
+        return Utils::keywordsToBarChartData(
+            $filtered,
+            "Selected Article Keywords\n(Filtered > 5 Occurrences)"
+        );
     }
 }

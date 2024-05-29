@@ -18,8 +18,9 @@
     async function updateInsights() {
         const results = await get(insightsPath);
         const { chartLeft, chartRight, tableHtml } = await results.json();
-        console.log(chartLeft);
-        console.log(chartRight);
+
+        updateInsightsButton('Update Insights');
+        resetSubheader();
         updateTableHtml(tableHtml);
         updateBarCharts(chartLeft, chartRight);
     }
@@ -43,8 +44,38 @@
 
         const tr = target.closest('tr');
         const referenceId = tr.dataset.referenceId;
-        // need to modify the router to accept id, or use query param as workaround
-        //        get(articlePath)
+        const headline = tr.querySelector('td:first-child').innerText;
+        const url = tr.querySelector('td:nth-child(2)').innerText;
+        updateSubheader(headline, url);
+        updateInsightsButton('Back to Insights');
+        updateArticleInsights(referenceId);
+    }
+
+    function updateInsightsButton(text) {
+        document.getElementById('updateInsights').innerText = text;
+    }
+
+    function updateSubheader(headline, url) {
+        const subheaderLink = document.querySelector('h2 a');
+        subheaderLink.setAttribute('href', url);
+        subheaderLink.innerText = headline;
+    }
+
+    function resetSubheader() {
+        updateSubheader('Associated Press News: www.apnews.com', 'https://www.apnews.com');
+    }
+
+    async function updateArticleInsights(referenceId) {
+        const response = await get(`${articlePath}/${referenceId}`);
+        const { chartRight } = await response.json();
+
+        if (typeof chartRight === "string") {
+            emptyResultForArticle(chartRight);
+            return;
+        }
+
+        destroyChart('.left');
+        updateBarCharts(false, chartRight);
     }
 
     function updateTableHtml(tableHtml) {
@@ -78,6 +109,7 @@
         canvasWrapper.classList.add('canvasWrapper');
         canvasWrapper.appendChild(canvas);
         toElement.appendChild(canvasWrapper);
+        toElement.classList.remove('empty');
 
         return toElement.querySelector('canvas');
     }
@@ -100,6 +132,20 @@
         }
 
         setupBarCharts();
+    }
+
+    function destroyChart(selector) {
+        const element = document.querySelector(selector);
+        element.classList.add('empty');
+        element.innerHTML = '';
+    }
+
+    function emptyResultForArticle(message) {
+        destroyChart('.left');
+        destroyChart('.right');
+        const rightContainer = document.querySelector('.right');
+        rightContainer.innerText = message;
+        rightContainer.classList.remove('empty');
     }
 
     async function get(path, params = {}) {

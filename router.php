@@ -24,15 +24,46 @@ if (preg_match('/\.(?:css|js)$/', $requestUri)) {
     }
 }
 
+// handle article insights
+if (preg_match('/^\/insights\/article\/(\d+)$/', $requestUri, $route)) {
+    // Extract ID from the matched route
+    $referenceId = $route[1];
+
+    // If we've already stored some data for a specific article, try to look it up.
+    if (APNewsScraper::hasArticleInsightsData()) {
+        $insightData = APNewsScraper::findRowByReferenceId($referenceId, APNewsScraper::articleInsightsData());
+        if (!empty($insightData)) {
+            Responses::sendArticleInsight($insightData);
+            exit(200);
+        }
+    }
+
+    // If we have the headline data, try to find the url and scrape it from the data that we have.
+    if (APNewsScraper::hasHeadlinesData()) {
+        $insightData = APNewsScraper::scrapeArticleBody($referenceId);
+        APNewsScraper::saveArticleBodyToCSV(
+            $referenceId,
+            $insightData[APNewsScraper::ARTICLE_URL],
+            $insightData[APNewsScraper::ARTICLE_BODY]
+        );
+
+        Responses::sendArticleInsight($insightData);
+        exit(200);
+    }
+
+    // if we received an id, but there is not any data saved, this is an invalid request.
+    exit(400);
+}
+
 // route PHP logic, fragile for the sake of project, does not handle query params
 switch ($requestUri) {
     case '/':
         require __DIR__ . '/views/home.php';
         break;
     case '/insights':
-        APNewsScraper::saveArticleDataToCSV(
-            APNewsScraper::CSV_FILE_NAME,
-            APNewsScraper::scrapeArticleData()
+        APNewsScraper::saveArticleHeadlinesDataToCSV(
+            APNewsScraper::HEADLINES_CSV_FILE_NAME,
+            APNewsScraper::scrapeArticleHeadlinesData()
         );
 
         Responses::sendInsights();

@@ -1,4 +1,5 @@
 <?php
+
 class Utils {
     const STOP_WORDS = [
         '-',
@@ -39,7 +40,7 @@ class Utils {
 
     static function normalizePath(string $path): string
     {
-        $path = preg_replace('/[\\\\\/]+/', '/', $path);
+        $path = preg_replace('/[\\\\\/]+/', '/', parse_url($path, PHP_URL_PATH));
         $segments = explode('/', trim($path, '/'));
         $ret = [];
         foreach ($segments as $segment) {
@@ -105,6 +106,23 @@ class Utils {
     static function filterByCount(array $counts, int $count = 2): array
     {
         return array_filter($counts, fn($value) => $value > $count);
+    }
+
+    static function articleInsightSumKeywords(string $body, $sortDirection = SORT_DESC): array
+    {
+        $normalized = strtolower($body);
+
+        $keywords = [];
+        foreach(explode(' ', $normalized) as $word) {
+            if ($word === '' || in_array($word, self::STOP_WORDS)) continue;
+
+            if (!isset($keywords[$word])) $keywords[$word] = 0;
+
+            $keywords[$word]++;
+        }
+
+        array_multisort($keywords, $sortDirection);
+        return $keywords;
     }
 
     static function keywordsToBarChartData(array $keywords, string $label): array

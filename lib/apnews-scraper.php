@@ -6,22 +6,44 @@
 class APNewsScraper
 {
     const TOP_URL = 'https://www.apnews.com';
-    const CSV_FILE_NAME = 'apnewsdata-articles.csv';
+    const HEADLINES_CSV_FILE_NAME = 'apnewsdata-article-headlines.csv';
+    const ARTICLE_INSIGHTS_CSV_FILE_NAME = 'apnewsdata-article-insights';
 
     const ARTICLE_HEADER = 'Article Header';
     const ARTICLE_URL = 'Article URL';
     const ARTICLE_DESCRIPTION = 'Article Description';
     const ARTICLE_REFERENCE_ID = 'Reference ID';
 
-    const CSV_HEADERS = [
+    const HEADLINES_CSV_HEADERS = [
         self::ARTICLE_HEADER,
         self::ARTICLE_URL,
         self::ARTICLE_DESCRIPTION,
         self::ARTICLE_REFERENCE_ID,
     ];
     
+    const ARTICLE_BODY = 'Article Body';
+
+    const ARTICLE_INSIGHTS_HEADERS = [
+        self::ARTICLE_REFERENCE_ID,
+        self::ARTICLE_BODY,
+        self::ARTICLE_URL,
+    ];
+
     // XPATH Selectors
     const ARTICLE_HEADERS_SELECTOR = './/h2[contains(@class,"PagePromo-title")]|.//h3[contains(@class, "PagePromo-title")]';
+    const ARTICLE_BODY_SELECTOR = '//p';
+
+    const SCRAPING_OPTS = [
+        'http' => [
+            'method' => 'GET',
+            'header' => <<<HEREDOC
+                Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
+                User-Agent:	Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/109.0
+                Accept-Language: en-US,en;q=0.5
+                Referrer: https://www.apnews.com
+            HEREDOC,
+        ],
+    ];
 
     /**
      * Fetches supplied URL, loads into DOMDocument
@@ -33,8 +55,10 @@ class APNewsScraper
     {
         // for silencing custom html element errors
         libxml_use_internal_errors(true);
+        $context = stream_context_create(self::SCRAPING_OPTS);
+        $doc = file_get_contents($url, false, $context);
         $dom = new DOMDocument();
-        $dom->loadHTML(file_get_contents($url));
+        $dom->loadHTML($doc);
         libxml_clear_errors();
         return $dom;
     }
@@ -51,7 +75,7 @@ class APNewsScraper
         return (new DOMXPath($dom))->query($query);
     }
 
-    static function scrapeArticleData(): array
+    static function scrapeArticleHeadlinesData(): array
     {
         $dom = self::fetch();
 
@@ -66,10 +90,10 @@ class APNewsScraper
         }, iterator_to_array($articleHeaderNodes));
     }
 
-    static function saveArticleDataToCSV(string $filename, array $content)
+    static function saveArticleHeadlinesDataToCSV(string $filename, array $content)
     {
         $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $filename, 'w+');
-        fputcsv($file, self::CSV_HEADERS);
+        fputcsv($file, self::HEADLINES_CSV_HEADERS);
 
         // iterate through elements, storing data in CSV
         foreach ($content as $i => $c) {
@@ -84,16 +108,84 @@ class APNewsScraper
         return fclose($file);
     }
 
-    static function hasData(): bool
+    static function hasHeadlinesData(): bool
     {
-        return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::CSV_FILE_NAME);
+        return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::HEADLINES_CSV_FILE_NAME);
     }
 
-    static function articleData(): array
+    static function articleHeadlinesData(): array
     {
-        if (!self::hasData()) return [];
+        if (!self::hasHeadlinesData()) return [];
 
-        $csv = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . self::CSV_FILE_NAME, 'r');
+        $csv = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . self::HEADLINES_CSV_FILE_NAME, 'r');
+        $keys = fgetcsv($csv);
+        $data = [];
+
+        while (($row = fgetcsv($csv)) !== false) {
+            $data[] = array_combine($keys, $row);
+        }
+
+        return $data;
+    }
+
+    static function findRowByReferenceId(string $referenceId, array $data): array
+    {
+        foreach ($data as $row) {
+            if (isset($row['Reference ID']) && $row['Reference ID'] == $referenceId) {
+                return $row;
+            }
+        }
+
+        return [];
+    }
+
+    static function scrapeArticleBody(string $referenceId): array
+    {
+        $url = self::getCanonicalURLFromData($referenceId);
+        if (empty($url)) return [];
+
+        $dom = self::fetch($url);
+        $pNodes = self::findElements($dom, self::ARTICLE_BODY_SELECTOR);
+
+        $final = '';
+        foreach ($pNodes as $p) {
+            $final .= trim($p->textContent);
+        }
+
+        return [
+            self::ARTICLE_URL => $url,
+            self::ARTICLE_BODY => $final,
+            self::ARTICLE_REFERENCE_ID => $referenceId,
+        ];
+    }
+
+    static function saveArticleBodyToCSV(string $referenceId, string $url, string $body, string $filename = self::ARTICLE_INSIGHTS_CSV_FILE_NAME): bool
+    {
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $filename, 'a+');
+
+        if (!fgetcsv($file)) {
+            fputcsv($file, self::ARTICLE_INSIGHTS_HEADERS);
+        }
+
+        fputcsv($file, [
+            $referenceId,
+            $body,
+            $url,
+        ]);
+
+        return fclose($file);
+    }
+
+    static function hasArticleInsightsData(): bool
+    {
+        return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::ARTICLE_INSIGHTS_CSV_FILE_NAME);
+    }
+
+    static function articleInsightsData(): array
+    {
+        if (!self::hasArticleInsightsData()) return [];
+
+        $csv = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . self::ARTICLE_INSIGHTS_CSV_FILE_NAME, 'r');
         $keys = fgetcsv($csv);
         $data = [];
 
@@ -249,5 +341,15 @@ class APNewsScraper
     private static function hasDeepChild(DOMNode $node, string $element, string $className): bool
     {
         return !is_null(self::recursivelyFindFirstChildElement($node, $element, $className));
+    }
+
+    private static function getCanonicalURLFromData(string $referenceId): string
+    {
+        $row = self::findRowByReferenceId($referenceId, self::articleHeadlinesData());
+        if (!empty($row)) {
+            return $row[self::ARTICLE_URL];
+        }
+
+        return '';
     }
 }

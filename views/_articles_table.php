@@ -1,4 +1,4 @@
-<?php $articles = APNewsScraper::articleData(); ?>
+<?php $articles = APNewsScraper::articleHeadlinesData(); ?>
 <legend class="total-articles"><?= count($articles) ?> Front Page Articles</legend>
 <table class="articles">
     <thead>

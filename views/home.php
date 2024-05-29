@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 
-    <?php if (APNewsScraper::hasData()): ?>
+    <?php if (APNewsScraper::hasHeadlinesData()): ?>
         <?php require __DIR__ . '/_articles_table.php' ?>
     <?php else: ?>
         <p>
@@ -10,6 +10,6 @@
 
 <?php $bottomContent = ob_get_clean(); ?>
 
-<?php if (APNewsScraper::hasData()): ?>
+<?php if (APNewsScraper::hasHeadlinesData()): ?>
     <?php require __DIR__ . '/_keyword_insights.php' ?>
 <?php endif; ?>

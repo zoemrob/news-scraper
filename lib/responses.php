@@ -20,4 +20,14 @@ class Responses
             'tableHtml' => $tableHtml,
         ]);
     }
+
+    static function sendArticleInsight(array $articleData): void
+    {
+        $formatted = DataProcessor::articleInsightsKeywordsData($articleData);
+        if (empty($formatted)) {
+            self::jsonResponse(['chartRight' => 'No keywords occurring greater than 5 times for the article.']);
+        } else {
+            self::jsonResponse(['chartRight' => $formatted]);
+        }
+    }
 }
