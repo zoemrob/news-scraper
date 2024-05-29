@@ -303,6 +303,10 @@ class APNewsScraper
      */
     private static function recursivelyFindParentElement(DOMNode $node, string $element, string $className = ''): DOMNode
     {
+        if (!isset($node->parentElement)) {
+            return $node;    
+        }
+
         if ($node->parentElement->nodeName === $element) {
             $found = ($className === '') || self::hasClassName($node->parentElement, $className);
 
