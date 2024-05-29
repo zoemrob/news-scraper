@@ -10,7 +10,7 @@ class APNewsScraper
     const ARTICLE_INSIGHTS_CSV_FILE_NAME = 'apnewsdata-article-insights.csv';
 
     /** HEADLINES FILE HEADERS */
-    const ARTICLE_HEADER = 'Article Header';
+    const ARTICLE_HEADER = 'Article Headline';
     const ARTICLE_URL = 'Article URL';
     const ARTICLE_DESCRIPTION = 'Article Description';
     const ARTICLE_REFERENCE_ID = 'Reference ID';
