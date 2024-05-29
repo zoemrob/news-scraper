@@ -1,6 +1,8 @@
 <?php
 
 class Utils {
+    // Crude list of stop words to filter out noise. Not comprehensive.
+    // Likely a library would be more suitable in a production environment.
     const STOP_WORDS = [
         '-',
         'at',
@@ -28,6 +30,7 @@ class Utils {
         'some',
     ];
 
+    // Thought I would be clever and steal some OSINT Combine brand colors
     const OSINT_BLUE = 'blue';
     const OSINT_BLUE_LIGHT = 'blue-light';
     const OSTINT_ORANGE = 'orange';
@@ -38,6 +41,12 @@ class Utils {
         self::OSINT_BLUE_LIGHT => 'rgba(40, 37, 96, .1)',
     ];
 
+    /**
+     * Vastly simplifies/normalizes request URI
+     * @param string $path full Request URI
+     *
+     * @return string normalized URI path
+     */
     static function normalizePath(string $path): string
     {
         $path = preg_replace('/[\\\\\/]+/', '/', parse_url($path, PHP_URL_PATH));
@@ -53,7 +62,14 @@ class Utils {
         return '/' . implode('/', $ret);
     }
 
-    static function countAllKeywords(array $strings, $sortDirection = SORT_DESC): array
+    /**
+     * Helper method to group keywords by their sum, across all supplied strings and sort result
+     * @param array $strings strings to extract keywords from
+     * @param int $sortDirection for multisort
+     *
+     * @return array keyword => sum
+     */
+    static function countAllKeywords(array $strings, int $sortDirection = SORT_DESC): array
     {
         $counts = [];
 
@@ -78,7 +94,14 @@ class Utils {
         return $counts;
     }
 
-    static function articleSumByKeyword(array $headlines, $sortDirection = SORT_DESC): array
+    /**
+     * Helper method to aggregate the number of headlines where a given keyword occurs and sort result
+     * @param array $headlines headlines to check for keywords
+     * @param int $sortDirection for multisort
+     *
+     * @return array keyword => sum of article headlines
+     */
+    static function articleSumByKeyword(array $headlines, int $sortDirection = SORT_DESC): array
     {
         $articlesByKeywords = [];
 
@@ -103,12 +126,26 @@ class Utils {
         return $articlesByKeywords;
     }
 
+    /**
+     * Filters an array by a count threshold
+     * @param array $counts key => int
+     * @param int $count minimum threshold (non-inclusive)
+     *
+     * @return array key => int
+     */
     static function filterByCount(array $counts, int $count = 2): array
     {
         return array_filter($counts, fn($value) => $value > $count);
     }
 
-    static function articleInsightSumKeywords(string $body, $sortDirection = SORT_DESC): array
+    /**
+     * Count keywords of a string, group by word, and sort
+     * @param string $body string to search for keywords
+     * @param int $sortDirection for multisort
+     *
+     * @return array keyword => int
+     */
+    static function articleInsightSumKeywords(string $body, int $sortDirection = SORT_DESC): array
     {
         $normalized = strtolower($body);
 
@@ -125,6 +162,13 @@ class Utils {
         return $keywords;
     }
 
+    /**
+     * Converts an array of string => int into chart.js format
+     * @param array $keywords string => int
+     * @param string $label Label for chart legend
+     *
+     * @return array
+     */
     static function keywordsToBarChartData(array $keywords, string $label): array
     {
         return [
@@ -154,6 +198,13 @@ class Utils {
         ];
     }
 
+    /**
+     * Variant of keywordsToBarChart which returns as JSON
+     * @param array $keywords string => int
+     * @param string $label Label for chart legend
+     *
+     * @return string
+     */
     static function keywordsToBarChartJson(array $keywords, string $label): string
     {
         return json_encode(self::keywordsToBarChartData($keywords, $label));

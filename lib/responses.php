@@ -2,12 +2,18 @@
 
 class Responses
 {
+    /**
+     * Helper method that sends json header and json response
+     */
     static function jsonResponse(array $data): void
     {
         header('Content-Type: application/json');
         echo json_encode($data);
     }
     
+    /**
+     * Sends back json data for /insights route
+     */
     static function sendInsights(): void
     {
         ob_start();
@@ -21,6 +27,9 @@ class Responses
         ]);
     }
 
+    /**
+     * Sends back json data for /insights/article/:referenceId route
+     */
     static function sendArticleInsight(array $articleData): void
     {
         $formatted = DataProcessor::articleInsightsKeywordsData($articleData);

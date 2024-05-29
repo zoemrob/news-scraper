@@ -9,6 +9,7 @@ class APNewsScraper
     const HEADLINES_CSV_FILE_NAME = 'apnewsdata-article-headlines.csv';
     const ARTICLE_INSIGHTS_CSV_FILE_NAME = 'apnewsdata-article-insights';
 
+    /** HEADLINES FILE HEADERS */
     const ARTICLE_HEADER = 'Article Header';
     const ARTICLE_URL = 'Article URL';
     const ARTICLE_DESCRIPTION = 'Article Description';
@@ -21,6 +22,7 @@ class APNewsScraper
         self::ARTICLE_REFERENCE_ID,
     ];
     
+    /** ARTICLE INSIGHTS FILE HEADERS */
     const ARTICLE_BODY = 'Article Body';
 
     const ARTICLE_INSIGHTS_HEADERS = [
@@ -75,6 +77,10 @@ class APNewsScraper
         return (new DOMXPath($dom))->query($query);
     }
 
+    /**
+     * Fetches front page of AP News and returns an array of article headlines
+     * @return array
+     */
     static function scrapeArticleHeadlinesData(): array
     {
         $dom = self::fetch();
@@ -90,7 +96,14 @@ class APNewsScraper
         }, iterator_to_array($articleHeaderNodes));
     }
 
-    static function saveArticleHeadlinesDataToCSV(string $filename, array $content)
+    /**
+     * Stores article headlines data to supplied CSV file, overwrites whole file each time.
+     * @param string $filename csv file to store to
+     * @param array $content 2D array of article headline data
+     *
+     * @return bool
+     */
+    static function saveArticleHeadlinesDataToCSV(string $filename, array $content): bool
     {
         $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $filename, 'w+');
         fputcsv($file, self::HEADLINES_CSV_HEADERS);
@@ -108,11 +121,19 @@ class APNewsScraper
         return fclose($file);
     }
 
+    /**
+     * Checks if article headline file exists
+     * @return bool
+     */
     static function hasHeadlinesData(): bool
     {
         return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::HEADLINES_CSV_FILE_NAME);
     }
 
+    /**
+     * Reads article headline file data, returns 2D array with csv headers as keys
+     * @return array
+     */
     static function articleHeadlinesData(): array
     {
         if (!self::hasHeadlinesData()) return [];
@@ -128,6 +149,11 @@ class APNewsScraper
         return $data;
     }
 
+    /**
+     * Finds a specific row by reference id key
+     * @param string $referenceId Reference ID to search for
+     * @param array $data row if found, or empty array
+     */
     static function findRowByReferenceId(string $referenceId, array $data): array
     {
         foreach ($data as $row) {
@@ -139,6 +165,12 @@ class APNewsScraper
         return [];
     }
 
+    /**
+     * Scrapes a specific article's body and returns an associative array of data
+     * @param string $referenceId Reference ID to search dataset for
+     *
+     * @return array article data
+     */
     static function scrapeArticleBody(string $referenceId): array
     {
         $url = self::getCanonicalURLFromData($referenceId);
@@ -159,6 +191,15 @@ class APNewsScraper
         ];
     }
 
+    /**
+     * Saves article data to local CSV, using append mode
+     * @param string $referenceId Reference ID of article
+     * @param string $url Canonical URL to article
+     * @param string $body Content of article
+     * @param string $filename Filename to save to
+     *
+     * @return bool success|failure
+     */
     static function saveArticleBodyToCSV(string $referenceId, string $url, string $body, string $filename = self::ARTICLE_INSIGHTS_CSV_FILE_NAME): bool
     {
         $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/' . $filename, 'a+');
@@ -176,11 +217,19 @@ class APNewsScraper
         return fclose($file);
     }
 
+    /**
+     * Checks if article insights file exists
+     * @return bool
+     */
     static function hasArticleInsightsData(): bool
     {
         return file_exists($_SERVER['DOCUMENT_ROOT'] . '/' . self::ARTICLE_INSIGHTS_CSV_FILE_NAME);
     }
 
+    /**
+     * Reads article insights csv file and returns 2D array of all entries, keyed by column headers
+     * @return array 2D of article insight entries
+     */
     static function articleInsightsData(): array
     {
         if (!self::hasArticleInsightsData()) return [];
@@ -343,6 +392,12 @@ class APNewsScraper
         return !is_null(self::recursivelyFindFirstChildElement($node, $element, $className));
     }
 
+    /**
+     * Searches for article by Reference ID in Headlines csv file, gets Canonical URL
+     * @param string $referenceId Reference ID of Article
+     *
+     * @return string url or empty
+     */
     private static function getCanonicalURLFromData(string $referenceId): string
     {
         $row = self::findRowByReferenceId($referenceId, self::articleHeadlinesData());
